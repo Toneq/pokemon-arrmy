@@ -11,4 +11,6 @@ class CustomPokemon extends Model
     protected $casts = [
         'data' => 'array'
     ];
+
+    protected $table = 'custom_pokemons';
 }
