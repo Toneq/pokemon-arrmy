@@ -15,7 +15,6 @@ class InfoController extends Controller
     public function fetch(Request $request)
     {
         try {
-            // Walidacja
             $validated = $request->validate([
                 'names' => 'required|array',
                 'names.*' => 'string'

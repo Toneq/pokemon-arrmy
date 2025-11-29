@@ -131,7 +131,6 @@ X-SUPER-SECRET-KEY: 123456
 ## 🗄 Cache
 
 - Dane z PokeAPI są cache’owane do **12:00 UTC+1 następnego dnia**.
-- Cache można zmienić w `.env` ustawiając `CACHE_STORE` (file, redis itp.).
 
 ---
 
