@@ -24,7 +24,6 @@ class InfoController extends Controller
 
         foreach ($allowed as $name) {
 
-            // custom pokemon
             $custom = CustomPokemon::where('name', $name)->first();
             if ($custom) {
                 $result[] = [
@@ -35,7 +34,6 @@ class InfoController extends Controller
                 continue;
             }
 
-            // cached official pokemon
             $pokemon = Cache::remember(
                 "pokeapi_$name",
                 now()->tomorrow()->setTime(12, 0),
