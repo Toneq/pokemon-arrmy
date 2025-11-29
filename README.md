@@ -19,7 +19,7 @@ Serwis umożliwia pobieranie informacji o Pokemonach z PokeAPI oraz zarządzanie
 
 ```bash
 git clone <repo-url>
-cd pokemon-api
+cd pokemon-arrmy
 ```
 
 2. Zainstaluj zależności:
