@@ -1,59 +1,218 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Pokemon API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Serwis umożliwia pobieranie informacji o Pokemonach z PokeAPI oraz zarządzanie własnymi i zakazanymi Pokemonami. Projekt stworzony w Laravel 12 z REST API, cache i prostym systemem autoryzacji.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📦 Wymagania
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP >= 8.2
+- Composer
+- Laravel 12
+- Redis (do cache)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ⚡ Instalacja
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1. Sklonuj repozytorium:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone <repo-url>
+cd pokemon-api
+```
 
-## Laravel Sponsors
+2. Zainstaluj zależności:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+```
 
-### Premium Partners
+3. Skopiuj plik `.env` i wygeneruj klucz:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Contributing
+4. Ustaw w `.env`:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```env
+SUPER_SECRET_KEY=123456
+POKEAPI_URL=https://pokeapi.co/api/v2
+MYSQL WG siebie
+Oraz redis na phpredis
+```
 
-## Code of Conduct
+5. Wykonaj migracje:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan migrate
+```
 
-## Security Vulnerabilities
+6. Uruchom serwer lokalny:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan serve
+```
 
-## License
+Domyślny URL: `http://127.0.0.1:8000`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🗂 Routing i Endpointy
+
+### Middleware `secret`
+
+Ścieżki chronione wymagają nagłówka:
+
+```
+X-SUPER-SECRET-KEY: 123456
+```
+
+---
+
+### 1️⃣ Banned Pokemony
+
+| Metoda | Endpoint | Headers | Body | Opis |
+|--------|---------|--------|------|-----|
+| GET | `/api/banned` | `X-SUPER-SECRET-KEY` | brak | Pobiera listę wszystkich zakazanych Pokemonów |
+| POST | `/api/banned` | `X-SUPER-SECRET-KEY` | `{"name":"pikachu"}` | Dodaje nowego zakazanego Pokemona |
+| DELETE | `/api/banned/{name}` | `X-SUPER-SECRET-KEY` | brak | Usuwa Pokemona z listy zakazanych |
+
+---
+
+### 2️⃣ Custom Pokemony (CRUD)
+
+| Metoda | Endpoint | Headers | Body | Opis |
+|--------|---------|--------|------|-----|
+| GET | `/api/custom` | `X-SUPER-SECRET-KEY` | brak | Pobiera wszystkie własne Pokemony |
+| POST | `/api/custom` | `X-SUPER-SECRET-KEY` | `{"name":"myCustomMon","data":{"type":"fire","attack":50}}` | Dodaje nowego Pokemona |
+| GET | `/api/custom/{id}` | `X-SUPER-SECRET-KEY` | brak | Pobiera konkretnego Pokemona po ID |
+| PUT | `/api/custom/{id}` | `X-SUPER-SECRET-KEY` | `{"name":"myCustomMon","data":{"type":"fire","attack":70}}` | Aktualizuje Pokemona |
+| DELETE | `/api/custom/{id}` | `X-SUPER-SECRET-KEY` | brak | Usuwa Pokemona po ID |
+
+---
+
+### 3️⃣ Info o Pokemonach (publiczne)
+
+- **POST** `/api/info`  
+  Pobiera informacje o liście Pokemonów (oficjalnych z PokeAPI oraz własnych).
+
+**Body JSON przykład:**
+
+```json
+{
+    "names": ["pikachu", "myCustomMon", "charizard"]
+}
+```
+
+**Response JSON przykład:**
+
+```json
+[
+  {
+    "name":"pikachu",
+    "data": { /* dane z PokeAPI */ },
+    "source":"official"
+  },
+  {
+    "name":"myCustomMon",
+    "data":{"type":"fire","attack":50},
+    "source":"custom"
+  }
+]
+```
+
+> Zakazane Pokemony są pomijane.
+
+---
+
+## 🗄 Cache
+
+- Dane z PokeAPI są cache’owane do **12:00 UTC+1 następnego dnia**.
+- Cache można zmienić w `.env` ustawiając `CACHE_DRIVER` (file, redis itp.).
+
+---
+
+## 🔒 Autoryzacja
+
+- Endpointy `/banned` i `/custom` wymagają nagłówka:
+
+```
+X-SUPER-SECRET-KEY: 123456
+```
+
+- `/info` jest publiczne i nie wymaga autoryzacji.
+
+---
+
+## 🛠 Testowanie w Postman
+
+### Banned Pokemony
+
+**GET /api/banned**
+- Headers: `X-SUPER-SECRET-KEY: 123456`
+
+**POST /api/banned**
+- Headers: `X-SUPER-SECRET-KEY: 123456`
+- Body:
+```json
+{
+  "name": "charizard"
+}
+```
+
+**DELETE /api/banned/charizard**
+- Headers: `X-SUPER-SECRET-KEY: 123456`
+
+### Custom Pokemony
+
+**POST /api/custom**
+- Headers: `X-SUPER-SECRET-KEY: 123456`
+- Body:
+```json
+{
+  "name": "myCustomMon",
+  "data": {"type":"fire","attack":50}
+}
+```
+
+**PUT /api/custom/1**
+- Headers: `X-SUPER-SECRET-KEY: 123456`
+- Body:
+```json
+{
+  "name": "myCustomMon",
+  "data": {"type":"fire","attack":70}
+}
+```
+
+**DELETE /api/custom/1**
+- Headers: `X-SUPER-SECRET-KEY: 123456`
+
+### Info Pokemony
+
+**POST /api/info**
+- Body:
+```json
+{
+  "names": ["pikachu", "myCustomMon"]
+}
+```
+
+**Response:**
+```json
+[
+  {"name":"pikachu","data":{/* dane */},"source":"official"},
+  {"name":"myCustomMon","data":{"type":"fire","attack":50},"source":"custom"}
+]
+```
+
+---
+
+## 💡 Uwagi
+
+- Własne Pokemony nie mogą mieć tej samej nazwy co istniejące w PokeAPI.  
+- Zakazane Pokemony nie są zwracane w `/info`.  
+```
