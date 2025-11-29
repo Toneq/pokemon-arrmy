@@ -131,7 +131,7 @@ X-SUPER-SECRET-KEY: 123456
 ## 🗄 Cache
 
 - Dane z PokeAPI są cache’owane do **12:00 UTC+1 następnego dnia**.
-- Cache można zmienić w `.env` ustawiając `CACHE_DRIVER` (file, redis itp.).
+- Cache można zmienić w `.env` ustawiając `CACHE_STORE` (file, redis itp.).
 
 ---
 
@@ -215,4 +215,3 @@ X-SUPER-SECRET-KEY: 123456
 
 - Własne Pokemony nie mogą mieć tej samej nazwy co istniejące w PokeAPI.  
 - Zakazane Pokemony nie są zwracane w `/info`.  
-```
